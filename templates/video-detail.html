@@ -1,0 +1,366 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdsTube</title>
+    <link rel="icon" type="images/png" href="{%static 'images/youtube-icon.png'%}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/single.css' %}" type="text/css">
+
+    <!-- CDNS -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"
+        integrity="sha384-3B6NwesSXE7YJlcLI9RpRqGf2p/EgVH8BgoKTaUrmKNDkHPStTQ3EyoYjCGXaOTS" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <base href="{% static '' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+
+    <div class="header">
+        <!-- Header menu Start -->
+
+        <div class="header__left">
+            <i id="menu" class="material-icons">menu</i>
+            <img src="{% static 'images/adstube_logo.png'%}"
+                alt="">
+        </div>
+        <!-- Header menu end -->
+
+        <!-- Header seach Start -->
+
+        <div class="header__search">
+            <form action="">
+                <input type="text" placeholder="Search">
+                <button><i class="material-icons">search</i></button>
+            </form>
+        </div>
+        <!-- Header search Start -->
+
+        <!-- Header Icons Start -->
+        <div class="header__icons">
+            <i class="material-icons display-this">search</i>
+            <i class="material-icons ">videocam</i>
+            <i class="material-icons">apps</i>
+            <i class="material-icons display-this">notifications</i>
+            <i id="drop-down" class="material-icons display-this">account_circle</i>
+        </div>
+        <!-- Header Icons Ends -->
+
+    </div>
+
+    <main class="single_pages">
+        <section class="video_items flex">
+            <div class="left">
+                <div class="left_content">
+                    <video controls>
+                        <source src="{{video.video.url}}" type="video/mp4" poster="images/1.jpg">
+                    </video>
+
+                    <div class="tag">
+                        {% for tag in video.tags.all %}
+                        <label for="" class="tags">#{{tag.name}}</label>
+                        {% endfor %}
+                        <p>{{video.title}}</p>
+                    </div>
+
+                    <div class="view flex2 border_bottom">
+                        <div class="view-text">
+                            <span>{{video.views}} Views</span>
+                        </div>
+
+                        <div class="flex">
+                            <div class="icon">
+                                <a href=""><i class="fa fa-thumbs-up"></i></a>
+                                <label for="">5k</label>
+                            </div>
+
+                            <div class="icon">
+                                <a href=""><i class="fa fa-thumbs-down"></i></a>
+                                <label for="">Dislike</label>
+                            </div>
+
+                            <div class="icon">
+                                <a href=""><i class="fa fa-share"></i></a>
+                                <label for="">Share</label>
+                            </div>
+
+                            <div class="icon">
+                                <a href=""><i class="fa fa-scissors"></i></a>
+                                <label for="">Clip</label>
+                            </div>
+
+                            <div class="icon">
+                                <a href=""><i class="fa fa-bookmark"></i></a>
+                                <label for="">Save</label>
+                            </div>
+
+                            <div class="icon">
+                                <a href=""><i class="fa fa-thumbs-up"></i></a>
+                                <label for="">5k</label>
+                            </div>
+
+                            <div class="icon">
+                                <a href=""><i class="fa fa-ellipsis"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details flex border_bottom">
+                        <div class="img">
+                            <img src="{{video.user.channel.image.url}}" alt="">
+                        </div>
+                        <div class="heading">
+                            <h4>{{video.user.channel.channel_name}}{% if video.user.channel.verified == True%}<small><i
+                                        class="fa fa-check-circle"></i></small>{% endif %} </h4>
+                            <span>{{video.user.channel.subscribers.count}} Subscribers</span>
+
+                            <h5>{{video.description}}</h5>
+                            <span> <i class="fa fa-caret-down"></i> show more</span>
+                        </div>
+                        <div>
+                            <a href="" class="subscribe-btn">Subscribe</a>
+                        </div>
+                    </div>
+
+                    <hr class="mid-hr">
+
+                    <div class="comment">
+                        <div class="comment-heading flex">
+                            <h4 id="comment_count"><b>{{comment.count}} Comments</b></h4>
+                            <h4><i class="fa fa-list-ul"></i> <label>Sort By</label> </h4>
+                        </div>
+                    </div>
+
+                    <div class="details comment_self flex">
+                        {%if request.user.is_authenticated %}
+                        <div class="img">
+                            <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png"
+                                alt="">
+                        </div>
+                        <form action="" style="width: 100%;" id="comment_form">
+                            {% csrf_token %}
+                            <div class="heading flex">
+                                <input type="hidden" name="id" id="id" value="{{video.id}}">
+                                <input type="text" placeholder="Add a comment..." id="comment" name="comment">
+                                <button id=""><i class="material-icons">send</i></button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <a href="../../admin/login" style="margin-top: 10px;">*Login to comment </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="comment-wrapper" id="comment-wrapper">
+                        {% for c in comment %}
+                        <div class="comment-tray">
+                            <div class="details_Comment">
+                                <div class="details flex">
+                                    <div class="img">
+                                        <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png"
+                                            alt="">
+                                    </div>
+                                    <div class="heading">
+                                        <h4><b>{{c.user.username|title}}</b>&nbsp; •<span>{{c.date|timesince}}
+                                                ago</span></h4>
+                                        <p>{{c.comment}}</p>
+                                        <div class="comment-like flex">
+                                            <div class="icon">
+                                                <i class="fa fa-thumbs-up"></i>
+                                                <label for=""><small>5</small></label>
+                                            </div>
+
+                                            <div class="icon">
+                                                <i class="fa fa-thumbs-down"></i>
+                                                <label for=""><small>Dislike</small></label>
+                                            </div>
+
+                                            <div class="icon">
+                                                <label for=""><a href=""><small>Reply</small></a></label>
+                                            </div>
+                                            {% if c.user == request.user %}
+                                            <div class="icon">
+                                                <input type="hidden" value="{{ c.id }}" name="" id="">
+                                                <label for=""><button data-cid={{c.id}} class="btn-del" style="color: red;"><small>Delete</small></button></label>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="replay">
+                                <label for="" class="tags"><i class="fa fa-caret-up"></i>Hide Reply</label>
+                                <div class="replay-details flex">
+                                    <div class="img">
+                                        <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png"
+                                            alt="">
+                                    </div>
+                                    <div class="text">
+                                        <h4><label for="">Desphixs</label> <span>16 Months ago</span> </h4>
+                                        <p>Thank you</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="right_content">
+                    <button class="chat">Show Chat Reply</button>
+                    <div class="tags">
+                        <label for="" class="tags-bg">All</label>
+                        <label for="" class="tags-bg">Web Design</label>
+                        <label for="" class="tags-bg">Frontend</label>
+                        <label for="" class="tags-bg">HTML</label>
+                    </div>
+
+                    <div class="video_items vide_sidebar flex">
+                        <a href="">
+                            <img src="images/1.jpg" alt="">
+                        </a>
+                        <div class="details">
+                            <p>Youtube CLone using HTML, CSS and JS</p>
+                            <span>Desphixs <i class="fa fa-check-circle"></i></span>
+                            <span>203K Views . 1 Week Ago </span>
+                        </div>
+                    </div>
+
+                    <div class="video_items vide_sidebar flex">
+                        <a href="">
+                            <img src="images/1.jpg" alt="">
+                        </a>
+                        <div class="details">
+                            <p>Youtube CLone using HTML, CSS and JS</p>
+                            <span>Desphixs <i class="fa fa-check-circle"></i></span>
+                            <span>203K Views . 1 Week Ago </span>
+                        </div>
+                    </div>
+
+                    <div class="video_items vide_sidebar flex">
+                        <a href="">
+                            <img src="images/1.jpg" alt="">
+                        </a>
+                        <div class="details">
+                            <p>Youtube CLone using HTML, CSS and JS</p>
+                            <span>Desphixs <i class="fa fa-check-circle"></i></span>
+                            <span>203K Views . 1 Week Ago </span>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        // Saving Comment to db
+        $(document).on("submit", "#comment_form", function (e) {
+            e.preventDefault()
+            // console.log("Comment form is submitted")
+            let _comment = $("#comment").val()
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'save-comment' %}",
+                data: {
+                    id: $("#id").val(),
+                    comment: _comment,
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+                },
+                success: function (response) {
+                    console.log("Comment passed to backend")
+
+                    let _html = '<div class="details_Comment">\
+                        <div class="details flex">\
+                                    <div class="img">\
+                                        <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png"\
+                                        alt="">\
+                                    </div>\
+                                    <div class="heading">\
+                                        <h4><b>{{request.user.username|title}}</b>&nbsp; •<span>{% now "H: i" %} ago</span></h4>\
+                                        <p>'+ _comment +'</p>\
+                                        <div class="comment-like flex">\
+                                            <div class="icon">\
+                                                <i class="fa fa-thumbs-up"></i>\
+                                                <label for=""><small>5</small></label>\
+                                            </div>\
+                                            <div class="icon">\
+                                                <i class="fa fa-thumbs-down"></i>\
+                                                <label for=""><small>Dislike</small></label>\
+                                            </div>\
+                                            <div class="icon">\
+                                                <label for=""><a href=""><small>Reply</small></a></label>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </div >\
+                            </div >\
+                            <div class="replay">\
+                        <label for="" class="tags"><i class="fa fa-caret-up"></i>Hide Reply</label>\
+                        <div class="replay-details flex">\
+                            <div class="img">\
+                                <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png"  alt="">\
+                            </div>\
+                            <div class="text">\
+                                <h4><label for="">Desphixs</label> <span>16 Months ago</span> </h4>\
+                                <p>Thank you</p>\
+                            </div>\
+                        </div>\
+                        </div>\
+                        <hr>\
+                        '
+
+                    $("#comment").val("")
+                    $("#comment-wrapper").prepend(_html)
+                    console.log(typeof(response))
+                    console.log(response.comments_count)
+                    // JSON.parse(response)
+                    // $("#comment_count").text(response.comments_count + ' Comments');
+                    $("#comment_count").html('<b>' + response.comments_count + ' Comments</b>');
+
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            })
+        })
+
+        // Deleting Comment
+        $("#comment-wrapper").on("click",".btn-del",function(){
+            let id=$(this).attr("data-cid")
+
+            mydata={
+                cid:id
+            }
+            mythis=$(this)
+            console.log(mythis)
+
+            $.ajax({
+                type:"POST",
+                url:"{% url 'delete-comment'%}",
+                data:mydata,
+
+                success:function(response){
+
+                }
+
+            })
+        })
+    </script>
+</body>
+
+</html>
