@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from core.models import Video,Comment
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -12,6 +13,7 @@ def index(request):
     #return HttpResponse("Hello world")
     return render(request,"index.html",context)
 
+#Function for video-detail.html 
 def videoDetail(request,pk):
     video=Video.objects.get(id=pk)
 
@@ -20,7 +22,6 @@ def videoDetail(request,pk):
     
     #Getting all comments related to this video
     comment=Comment.objects.filter(active=True, video=video.id).order_by("-date")
-
 
     context={
         "video":video,
@@ -50,14 +51,17 @@ def ajax_save_comment(request):
         return JsonResponse({'comments_count':comments_count})
 
 #Deleting Comment
+@csrf_exempt
 def ajax_delete_comment(request):
     if request.method=="POST":
         id=request.POST.get("cid")
         comment=Comment.objects.get(id=id)
         #Deriving video_id through the comment object
         video_id=comment.video
+        #Deleting the comment from db
         comment.delete()
 
+        #Counting the no. of. comments
         comments_count=Comment.objects.filter(video=video_id).count()
 
         return JsonResponse({"status":1,"comments_count":comments_count})

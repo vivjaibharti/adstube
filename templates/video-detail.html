@@ -28,8 +28,10 @@
 
         <div class="header__left">
             <i id="menu" class="material-icons">menu</i>
-            <img src="{% static 'images/adstube_logo.png'%}"
+            <a href="{% url 'index' %}"><img src="{% static 'images/adstube_logo.png'%}"
                 alt="">
+            </a>
+            
         </div>
         <!-- Header menu end -->
 
@@ -347,14 +349,24 @@
                 cid:id
             }
             mythis=$(this)
-            console.log(mythis)
+            // console.log(mythis)
 
             $.ajax({
                 type:"POST",
                 url:"{% url 'delete-comment'%}",
                 data:mydata,
-
                 success:function(response){
+                // console.log(data);
+                if(response.status === 1){
+                    // console.log("Comment Deleted");
+                    $(mythis).closest(".comment-tray").fadeOut();
+                    $("#comment_count").html('<b>' + response.comments_count + ' Comments</b>');
+
+                }
+                if(response.status === 0){
+                    // console.log("Unable To Delete Comment");
+                    alert("Unable to delete comment, try again later...")
+                }
 
                 }
 
