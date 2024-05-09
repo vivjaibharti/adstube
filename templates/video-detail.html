@@ -28,10 +28,9 @@
 
         <div class="header__left">
             <i id="menu" class="material-icons">menu</i>
-            <a href="{% url 'index' %}"><img src="{% static 'images/adstube_logo.png'%}"
-                alt="">
+            <a href="{% url 'index' %}"><img src="{% static 'images/adstube_logo.png'%}" alt="">
             </a>
-            
+
         </div>
         <!-- Header menu end -->
 
@@ -127,7 +126,11 @@
                             <span> <i class="fa fa-caret-down"></i> show more</span>
                         </div>
                         <div>
-                            <a href="" class="subscribe-btn">Subscribe</a>
+                            {% if request.user.is_authenticated %}
+                            <button class="subscribe-btn">Subscribe</button>
+                            {% else %}
+                            <button class="subscribe-btn">Subscribe</button>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -189,7 +192,8 @@
                                             {% if c.user == request.user %}
                                             <div class="icon">
                                                 <input type="hidden" value="{{ c.id }}" name="" id="">
-                                                <label for=""><button data-cid={{c.id}} class="btn-del" style="color: red;"><small>Delete</small></button></label>
+                                                <label for=""><button data-cid={{c.id}} class="btn-del"
+                                                        style="color: red;"><small>Delete</small></button></label>
                                             </div>
                                             {% endif %}
                                         </div>
@@ -286,15 +290,16 @@
                 success: function (response) {
                     console.log("Comment passed to backend")
 
-                    let _html = '<div class="details_Comment">\
-                        <div class="details flex">\
+                    let _html = '<div class="comment-tray">\
+                            <div class="details_Comment">\
+                                <div class="details flex">\
                                     <div class="img">\
-                                        <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png"\
-                                        alt="">\
+                                        <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png" alt="">\
                                     </div>\
                                     <div class="heading">\
-                                        <h4><b>{{request.user.username|title}}</b>&nbsp; •<span>{% now "H: i" %} ago</span></h4>\
-                                        <p>'+ _comment +'</p>\
+                                        <h4><b>{{request.user.username|title}}</b>&nbsp; •<span>{% now "H: i" %}\
+                                                ago</span></h4>\
+                                        <p>'+ _comment + '</p>\
                                         <div class="comment-like flex">\
                                             <div class="icon">\
                                                 <i class="fa fa-thumbs-up"></i>\
@@ -307,28 +312,32 @@
                                             <div class="icon">\
                                                 <label for=""><a href=""><small>Reply</small></a></label>\
                                             </div>\
+                                            <div class="icon">\
+                                                <input type="hidden" value="'+ response.new_comment_id + '" name="" id="">\
+                                                <label for=""><button data-cid="'+ response.new_comment_id + '" class="btn-del" style="color: red;"><small>Delete</small></button></label>\
+                                            </div>\
                                         </div>\
                                     </div>\
-                                </div >\
-                            </div >\
+                                </div>\
+                            </div>\
                             <div class="replay">\
-                        <label for="" class="tags"><i class="fa fa-caret-up"></i>Hide Reply</label>\
-                        <div class="replay-details flex">\
-                            <div class="img">\
-                                <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png"  alt="">\
+                                <label for="" class="tags"><i class="fa fa-caret-up"></i>Hide Reply</label>\
+                                <div class="replay-details flex">\
+                                    <div class="img">\
+                                        <img src="https://www.pngitem.com/pimgs/m/581-5813504_avatar-dummy-png-transparent-png.png" alt="">\
+                                    </div>\
+                                    <div class="text">\
+                                        <h4><label for="">Desphixs</label> <span>16 Months ago</span> </h4>\
+                                        <p>Thank you</p>\
+                                    </div>\
+                                </div>\
                             </div>\
-                            <div class="text">\
-                                <h4><label for="">Desphixs</label> <span>16 Months ago</span> </h4>\
-                                <p>Thank you</p>\
-                            </div>\
-                        </div>\
-                        </div>\
-                        <hr>\
-                        '
+                            <hr>\
+                        </div>'
 
                     $("#comment").val("")
                     $("#comment-wrapper").prepend(_html)
-                    console.log(typeof(response))
+                    console.log(typeof (response))
                     console.log(response.comments_count)
                     // JSON.parse(response)
                     // $("#comment_count").text(response.comments_count + ' Comments');
@@ -342,31 +351,31 @@
         })
 
         // Deleting Comment
-        $("#comment-wrapper").on("click",".btn-del",function(){
-            let id=$(this).attr("data-cid")
+        $("#comment-wrapper").on("click", ".btn-del", function () {
+            let id = $(this).attr("data-cid")
 
-            mydata={
-                cid:id
+            mydata = {
+                cid: id
             }
-            mythis=$(this)
+            mythis = $(this)
             // console.log(mythis)
 
             $.ajax({
-                type:"POST",
-                url:"{% url 'delete-comment'%}",
-                data:mydata,
-                success:function(response){
-                // console.log(data);
-                if(response.status === 1){
-                    // console.log("Comment Deleted");
-                    $(mythis).closest(".comment-tray").fadeOut();
-                    $("#comment_count").html('<b>' + response.comments_count + ' Comments</b>');
+                type: "POST",
+                url: "{% url 'delete-comment'%}",
+                data: mydata,
+                success: function (response) {
+                    // console.log(data);
+                    if (response.status === 1) {
+                        // console.log("Comment Deleted");
+                        $(mythis).closest(".comment-tray").fadeOut();
+                        $("#comment_count").html('<b>' + response.comments_count + ' Comments</b>');
 
-                }
-                if(response.status === 0){
-                    // console.log("Unable To Delete Comment");
-                    alert("Unable to delete comment, try again later...")
-                }
+                    }
+                    if (response.status === 0) {
+                        // console.log("Unable To Delete Comment");
+                        alert("Unable to delete comment, try again later...")
+                    }
 
                 }
 

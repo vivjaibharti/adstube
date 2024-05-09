@@ -13,6 +13,7 @@ def index(request):
     #return HttpResponse("Hello world")
     return render(request,"index.html",context)
 
+
 #Function for video-detail.html 
 def videoDetail(request,pk):
     video=Video.objects.get(id=pk)
@@ -44,11 +45,14 @@ def ajax_save_comment(request):
         new_comment.save()
 
         comments_count=Comment.objects.filter(video=video).count()
+        new_comment_id=new_comment.id
+
         # comments_count=int(comments_count)
 
         response="Comment Posted"
 
-        return JsonResponse({'comments_count':comments_count})
+        return JsonResponse({'comments_count':comments_count,'new_comment_id':new_comment_id})
+
 
 #Deleting Comment
 @csrf_exempt
@@ -68,6 +72,11 @@ def ajax_delete_comment(request):
 
     else:
         return JsonResponse({"status":0})
+    
+
+#Adding New Subscribers
+def add_new_subscribers(request):
+    pass
 
 
 
