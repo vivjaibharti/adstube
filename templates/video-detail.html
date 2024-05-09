@@ -19,6 +19,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"
+        integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+        .unsubscribe-btn{
+            background-color: grey;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
@@ -120,16 +130,21 @@
                         <div class="heading">
                             <h4>{{video.user.channel.channel_name}}{% if video.user.channel.verified == True%}<small><i
                                         class="fa fa-check-circle"></i></small>{% endif %} </h4>
-                            <span>{{video.user.channel.subscribers.count}} Subscribers</span>
+                            <span
+                                id="subs-count">{{video.user.channel.subscribers.count}}</span><span>Subscribers</span>
 
                             <h5>{{video.description}}</h5>
                             <span> <i class="fa fa-caret-down"></i> show more</span>
                         </div>
                         <div>
                             {% if request.user.is_authenticated %}
-                            <button class="subscribe-btn">Subscribe</button>
+                            {% if request.user in video.user.channel.subscribers.all %}
+                            <button class="subscribe-btn unsubscribe-btn" id="subs-btn">Unsubscribe</button>
                             {% else %}
-                            <button class="subscribe-btn">Subscribe</button>
+                            <button class="subscribe-btn" id="subs-btn">Subscribe</button>                   
+                            {% endif %}
+                            {% else %}
+                            <a href="../../admin/login"><button class="subscribe-btn">*Login to Subscribe</button></a>
                             {% endif %}
                         </div>
                     </div>
@@ -381,6 +396,42 @@
 
             })
         })
+    </script>
+
+    <script>
+        // Adding-Removing Subscribing Feature
+        let subscriber_count = document.getElementById("subs-count")
+        let subscriber_btn = document.getElementById("subs-btn")
+
+        function add_subs() {
+        axios.get('{% url "add-remove-subscribers" video.user.channel.id %}')
+            .then(function (response) {
+                // handle success
+                console.log(response.data);
+                subscriber_count.innerHTML = response.data.count_subscribers
+                if (response.data.status === 0) {
+
+                    subscriber_btn.innerHTML="Subscribe"
+                    subscriber_btn.classList.toggle("unsubscribe-btn")
+                }
+                else
+                {
+                    subscriber_btn.innerHTML="Unsubscribe"
+                    subscriber_btn.classList.toggle("unsubscribe-btn")                    
+                }
+
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+            .finally(function () {
+                // always executed
+            });
+        }
+
+        subscriber_btn.addEventListener("click",add_subs);
+
     </script>
 </body>
 

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from core.models import Video,Comment
+from channel.models import Channel
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
@@ -74,9 +75,24 @@ def ajax_delete_comment(request):
         return JsonResponse({"status":0})
     
 
-#Adding New Subscribers
-def add_new_subscribers(request):
-    pass
+#Adding-Removing Subscribers
+def axios_add_remove_subscribers(request,channel_id):
+    user=request.user
+    channel=Channel.objects.get(id=channel_id)
+
+    if user in channel.subscribers.all():
+        channel.subscribers.remove(user)
+        response="Unsubscribe"
+        count_subscribers=channel.subscribers.all().count()
+        return JsonResponse({'status':0,'response':response,'count_subscribers':count_subscribers})
+    else:
+        channel.subscribers.add(user)
+        response="Unsubscribe"
+        count_subscribers=channel.subscribers.count()      
+        return JsonResponse({'status':1,'response':response,'count_subscribers':count_subscribers})
+
+
+
 
 
 
