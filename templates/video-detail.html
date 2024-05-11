@@ -93,10 +93,14 @@
                         <div class="flex">
                             <div class="icon">
                                 <button>
+                                    {% if request.user.is_authenticated %}
                                     {% if request.user in video.likes.all %}
                                     <i class="fa fa-thumbs-up like" id="like-btn"></i>
                                     {% else %}
                                     <i class="fa fa-thumbs-up" id="like-btn"></i>
+                                    {% endif %}
+                                    {% else %}
+                                    <i class="fa fa-thumbs-up" id="like-btn" onclick="like_alert()"></i>
                                     {% endif %}
                                 </button>
                                 <label for="" id="like-count">{{video.likes.count}}</label>
@@ -462,6 +466,10 @@
             .finally(function (){
 
             })
+        }
+
+        function like_alert(){
+            alert("Log In First to Like the Video")
         }
 
         like_btn.addEventListener("click",add_like)
