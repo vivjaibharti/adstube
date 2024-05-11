@@ -11,6 +11,8 @@ urlpatterns = [
     path("ajax-delete-comment/",views.ajax_delete_comment,name='delete-comment'),
     #Subscribing and Unsubscribing Channel
     path("subs-unsubs/<int:channel_id>/",views.axios_add_remove_subscribers,name="add-remove-subscribers"),
+    #Like Video
+    path("like/<int:video_id>/",views.axios_like_video,name="like-video"),
 
 
     

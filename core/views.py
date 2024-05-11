@@ -91,6 +91,21 @@ def axios_add_remove_subscribers(request,channel_id):
         count_subscribers=channel.subscribers.count()      
         return JsonResponse({'status':1,'response':response,'count_subscribers':count_subscribers})
 
+#Like Video
+def axios_like_video(request,video_id):
+    user=request.user
+    video=Video.objects.get(id=video_id)
+
+    if user in video.likes.all():
+        video.likes.remove(user)
+        count_likes=video.likes.count()
+        status=0
+        return JsonResponse({'status':status,'count_likes':count_likes})
+    else:
+        video.likes.add(user)
+        count_likes=video.likes.count()
+        status=1
+        return JsonResponse({'status':status,'count_likes':count_likes})        
 
 
 
