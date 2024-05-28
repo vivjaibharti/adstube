@@ -18,6 +18,10 @@ def index(request):
 #Function for video-detail.html 
 def videoDetail(request,pk):
     video=Video.objects.get(id=pk)
+    channel=Channel.objects.get(id=video.user.channel.id)
+
+    channel.total_views=channel.total_views + 1
+    channel.save()
 
     video.views=video.views + 1
     video.save()
@@ -108,10 +112,23 @@ def axios_like_video(request,video_id):
         return JsonResponse({'status':status,'count_likes':count_likes})        
 
 
+#Save Video to the profile
+def axios_save_video(request,video_id):
+    profile= request.user.profile
+    video=Video.objects.get(id=video_id)
+
+    if video in profile.saved_videos.all():
+        profile.saved_videos.remove(video_id)
+        status=0
+        return JsonResponse({'status':status})
+    else:
+        profile.saved_videos.add(video_id)
+        status=1
+        return JsonResponse({'status':status})       
 
 
-
-
+#SignUp
+def 
 
 
 

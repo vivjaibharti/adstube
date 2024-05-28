@@ -32,6 +32,10 @@
         .like {
             color: red;
         }
+
+        .save {
+            color: red;
+        }
     </style>
 </head>
 
@@ -106,10 +110,10 @@
                                 <label for="" id="like-count">{{video.likes.count}}</label>
                             </div>
 
-                            <div class="icon">
+                            <!-- <div class="icon">
                                 <a href=""><i class="fa fa-thumbs-down"></i></a>
                                 <label for="">Dislike</label>
-                            </div>
+                            </div> -->
 
                             <div class="icon">
                                 <a href=""><i class="fa fa-share"></i></a>
@@ -122,8 +126,19 @@
                             </div> -->
 
                             <div class="icon">
-                                <a href=""><i class="fa fa-bookmark"></i></a>
-                                <label for="">Save</label>
+                                <button>
+                                    {% if request.user.is_authenticated %}
+                                    {% if video in request.user.profile.saved_videos.all %}
+                                    <i class="fa fa-bookmark save"></i> <label for="">Save</label>
+                                    {% else %}
+                                    <i class="fa fa-bookmark" id="save-btn"></i>
+                                    <label for="">Save</label>  
+                                    {% endif %}
+                                    {% else %}
+                                    <i class="fa fa-bookmark" id="save-btn" onclick="save_alert()"></i>
+                                    <label for="">Save</label>  
+                                    {% endif %}
+                                </button>
                             </div>
 
                             <div class="icon">
@@ -447,32 +462,59 @@
 
         function add_like() {
             axios.get('{% url "like-video" video.id %}')
-            .then(function(response){
-                if (response.data.status === 0) {
-                    console.log(response)
-                    like_count.innerHTML = response.data.count_likes                   
-                    like_btn.classList.toggle("like")
-                }
-                else
-                {
-                    console.log(response)
-                    like_count.innerHTML = response.data.count_likes
-                    like_btn.classList.toggle("like")
-                }
-            })
-            .catch(function (error){
-                console.log(error)
-            })
-            .finally(function (){
+                .then(function (response) {
+                    if (response.data.status === 0) {
+                        console.log(response)
+                        like_count.innerHTML = response.data.count_likes
+                        like_btn.classList.toggle("like")
+                    }
+                    else {
+                        console.log(response)
+                        like_count.innerHTML = response.data.count_likes
+                        like_btn.classList.toggle("like")
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error)
+                })
+                .finally(function () {
 
-            })
+                })
         }
 
-        function like_alert(){
+        function like_alert() {
             alert("Log In First to Like the Video")
         }
 
-        like_btn.addEventListener("click",add_like)
+        like_btn.addEventListener("click", add_like)
+
+        //Save Video
+        let save_btn = document.getElementById("save-btn");
+
+        function save_alert() {
+            alert("Log In First to Save the Video")
+        }
+
+        function save_video() {
+            axios.get('{% url "save-video" video.id %}')
+                .then(function (response) {
+                    if (response.data.status === 0) {
+                        console.log(response)
+                        save_btn.classList.toggle("save")
+                    }
+                    else {
+                        console.log(response)
+                        save_btn.classList.toggle("save")
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error)
+                })
+                .finally(function () {
+
+                })
+        }
+        save_btn.addEventListener("click", save_video)
 
     </script>
 </body>
